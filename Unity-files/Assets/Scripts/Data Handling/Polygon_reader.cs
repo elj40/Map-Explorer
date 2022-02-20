@@ -40,7 +40,7 @@ public class Polygon_reader : MonoBehaviour
 
         float offsetX = polygonData.features[0].geometry.coordinates[0][0][0][0];
         float offsetZ = polygonData.features[0].geometry.coordinates[0][0][0][1];
-        
+
         foreach (Feature f in polygonData.features) {
             GameObject p = Instantiate(polygonPrefab, this.transform);
             Polygon_drawer drawer = p.GetComponent<Polygon_drawer>();
