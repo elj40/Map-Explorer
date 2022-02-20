@@ -16,6 +16,11 @@ public class Polygon_drawer : MonoBehaviour
 
     [SerializeField] float scalar = 10f;
 
+    public float offsetX;
+    public float offsetZ;
+
+    public int id;
+
     // Start is called before the first frame update
     void Start()
     {   
@@ -42,20 +47,17 @@ public class Polygon_drawer : MonoBehaviour
 
     void CreateShape() {
         //Putting the coordinates into vertices;
+        Feature f = polygonReader.polygonData.features[id];
 
-        vertices = new Vector3[polygonReader.polygonData.totalCoordinates];
-
-        float offsetX = polygonReader.polygonData.features[0].geometry.coordinates[0][0][0][0];
-        float offsetZ = polygonReader.polygonData.features[0].geometry.coordinates[0][0][0][1];
+        vertices = new Vector3[f.geometry.coordinates[0][0].Length];
 
         int i = 0;
-        foreach (Feature f in polygonReader.polygonData.features) {
-            foreach (System.Single[] coords in f.geometry.coordinates[0][0]) {
-                vertices[i] = new Vector3((coords[0] - offsetX) * scalar, 0, (coords[1] - offsetZ) * scalar);
-                Debug.Log("Coordinates = " + vertices[i].x.ToString() + " " + vertices[i].x.ToString());
-                i++;
-            }
+        foreach (System.Single[] coords in f.geometry.coordinates[0][0]) {
+            vertices[i] = new Vector3((coords[0] - offsetX) * scalar, 0, (coords[1] - offsetZ) * scalar);
+            Debug.Log("Coordinates = " + vertices[i].x.ToString() + " " + vertices[i].x.ToString());
+            i++;
         }
+
 
         //Sorting out the triangles array
         triangles = new int[vertices.Length*3];
