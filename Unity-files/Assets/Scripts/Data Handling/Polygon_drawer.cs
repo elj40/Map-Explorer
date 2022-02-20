@@ -49,27 +49,32 @@ public class Polygon_drawer : MonoBehaviour
         //Putting the coordinates into vertices;
         Feature f = polygonReader.polygonData.features[id];
 
-        vertices = new Vector3[f.geometry.coordinates[0][0].Length];
+        List<Vector2> points = new List<Vector2>();
 
-        int i = 0;
         foreach (System.Single[] coords in f.geometry.coordinates[0][0]) {
-            vertices[i] = new Vector3((coords[0] - offsetX) * scalar, 0, (coords[1] - offsetZ) * scalar);
-            Debug.Log("Coordinates = " + vertices[i].x.ToString() + " " + vertices[i].x.ToString());
-            i++;
+            points.Add(new Vector2((coords[0] - offsetX) * scalar, (coords[1] - offsetZ) * scalar));
+            Debug.Log("Coordinates = " + (coords[0] - offsetX) * scalar + " " + (coords[1] - offsetZ) * scalar);
         }
 
+        List<List<Vector2>> holes = new List<List<Vector2>>();
+        List<int> lTriangles = null;
+        List<Vector3> lVertices = null;
 
+        Triangulate.triangulate(points, holes, out lTriangles, out lVertices);
+
+        triangles = lTriangles.ToArray();
+        vertices = lVertices.ToArray();
         //Sorting out the triangles array
-        triangles = new int[vertices.Length*3];
-        int t = 0;
+        // triangles = new int[vertices.Length*3];
+        // int t = 0;
 
-        for (i = 0; i < vertices.Length-2; i += 1) {
-            triangles[t + 0] = 0;
-            triangles[t + 1] = i+1;
-            triangles[t + 2] = i+2;
+        // for (i = 0; i < vertices.Length-2; i += 1) {
+        //     triangles[t + 0] = 0;
+        //     triangles[t + 1] = i+1;
+        //     triangles[t + 2] = i+2;
 
-            t += 3;
-        } 
+        //     t += 3;
+        // } 
     }
 
     void UpdateMesh() {
@@ -77,6 +82,7 @@ public class Polygon_drawer : MonoBehaviour
 
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.Optimize();
 
         mesh.RecalculateNormals();
     }
