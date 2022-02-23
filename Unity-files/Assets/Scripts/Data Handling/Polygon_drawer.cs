@@ -9,12 +9,16 @@ public class Polygon_drawer : MonoBehaviour
 
     public Polygon_reader polygonReader;
 
+    public int resolution = 1;
+    public float width = 10f;
+    public float height = 10f;
+
     Mesh mesh;
 
     Vector3[] vertices;
     int[] triangles;
 
-    [SerializeField] float scalar = 10f;
+    [SerializeField] float scalar = 1f;
 
     public float offsetX;
     public float offsetZ;
@@ -28,7 +32,7 @@ public class Polygon_drawer : MonoBehaviour
         mesh = new Mesh();
         this.GetComponent<MeshFilter>().mesh = mesh;
 
-        
+        resolution = 1;
     }
 
     // Update is called once per frame
@@ -49,32 +53,44 @@ public class Polygon_drawer : MonoBehaviour
         //Putting the coordinates into vertices;
         Feature f = polygonReader.polygonData.features[id];
 
-        List<Vector2> points = new List<Vector2>();
+        List<Vector3> points = new List<Vector3>();
+        List<List<Vector3>> points2d = new List<List<Vector3>>(); 
 
-        foreach (System.Single[] coords in f.geometry.coordinates[0][0]) {
-            points.Add(new Vector2((coords[0] - offsetX) * scalar, (coords[1] - offsetZ) * scalar));
-            Debug.Log("Coordinates = " + (coords[0] - offsetX) * scalar + " " + (coords[1] - offsetZ) * scalar);
+        float xStep = width/resolution;
+        float zStep = height/resolution;
+
+        Debug.Log("xStep: " + xStep.ToString() + ", zStep: " + zStep.ToString());
+
+        for (int i = 0; i <= resolution; i++) {
+            points2d.Add(new List<Vector3>());
+            float z = i * zStep;
+            for (int j = 0; j <= resolution; j++) {
+                float x = j * xStep;
+
+                points2d[i].Add(new Vector3(x,0, z));
+                points.Add(new Vector3(x,0, z));
+            }
         }
 
-        List<List<Vector2>> holes = new List<List<Vector2>>();
-        List<int> lTriangles = null;
-        List<Vector3> lVertices = null;
+        Setup.printArray(points.ToArray());
 
-        Triangulate.triangulate(points, holes, out lTriangles, out lVertices);
+        List<int> indices = new List<int>();
 
-        triangles = lTriangles.ToArray();
-        vertices = lVertices.ToArray();
-        //Sorting out the triangles array
-        // triangles = new int[vertices.Length*3];
-        // int t = 0;
+        //Create triangles array
+        for (int j = 0; j < points2d.Count-1; j++) {
+          for (int i = 0; i < points2d[j].Count-1; i++) {
+             int w = points2d[j].Count;
+             indices.Add(j * w   + i + 0);  // 0
+             indices.Add((j+1)*w + i + 0);  // 2
+             indices.Add((j+1)*w + i + 1);  // 3
+             indices.Add(j * w   + i + 1);  // 1
+             indices.Add(j * w   + i + 0);  // 0
+             indices.Add((j+1)*w + i + 1);  // 3
+          }
+        } 
 
-        // for (i = 0; i < vertices.Length-2; i += 1) {
-        //     triangles[t + 0] = 0;
-        //     triangles[t + 1] = i+1;
-        //     triangles[t + 2] = i+2;
-
-        //     t += 3;
-        // } 
+        triangles = indices.ToArray();
+        vertices = points.ToArray();
     }
 
     void UpdateMesh() {
@@ -87,12 +103,4 @@ public class Polygon_drawer : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    // private void OnDrawGizmos() {
-       
-
-    //     for (int i = 0; i < vertices.Length; i++) {
-    //         Gizmos.DrawSphere(vertices[i], 0.1f);
-    //     }
-
-    // }
 }
