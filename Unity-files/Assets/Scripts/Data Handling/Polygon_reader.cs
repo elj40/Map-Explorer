@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
-using TriangleNet;
+using CoordinateSharp;
 
 
 public class Polygon_reader : MonoBehaviour
@@ -13,6 +13,10 @@ public class Polygon_reader : MonoBehaviour
     public GameObject polygonPrefab;
 
     public PolygonData polygonData;
+
+    public ChunkManager cM;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,10 +33,15 @@ public class Polygon_reader : MonoBehaviour
         Debug.Log(polygonData.name);
         Debug.Log(polygonData.features[0].geometry.type);
 
-        polygonData.countCoordinates();
-        Debug.Log(polygonData.totalCoordinates);
+        cM.start();
 
-        createPolygons();
+        //polygonData.countCoordinates();
+        //Debug.Log(polygonData.totalCoordinates);
+
+        //createPolygons();
+
+        //smallestPoint = FindSmallestPoint(polygonData.features);
+        //largestPoint = FindLargestPoint(polygonData.features);
     }
 
     void createPolygons() {
@@ -45,12 +54,15 @@ public class Polygon_reader : MonoBehaviour
             GameObject p = Instantiate(polygonPrefab, this.transform);
             Polygon_drawer drawer = p.GetComponent<Polygon_drawer>();
             drawer.id = id;
-            drawer.offsetX = offsetX;
-            drawer.offsetZ = offsetZ;
+            drawer.offset.x = offsetX;
+            drawer.offset.y = offsetZ;
             drawer.polygonReader = this;
 
             id++;
+            //break;
         }
     }
+
+
 
 }
