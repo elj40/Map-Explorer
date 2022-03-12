@@ -29,19 +29,12 @@ public class Polygon_reader : MonoBehaviour
         polygonData = JsonConvert.DeserializeObject<PolygonData>(jsonInfo);
 
 
-        Debug.Log(polygonData.type);
-        Debug.Log(polygonData.name);
-        Debug.Log(polygonData.features[0].geometry.type);
-
+        // Debug.Log(polygonData.type);
+        // Debug.Log(polygonData.name);
+        // Debug.Log(polygonData.features[0].geometry.type);
+        Debug.Log("Polygon reader done, starting ChunkManager...");
         cM.start();
 
-        //polygonData.countCoordinates();
-        //Debug.Log(polygonData.totalCoordinates);
-
-        //createPolygons();
-
-        //smallestPoint = FindSmallestPoint(polygonData.features);
-        //largestPoint = FindLargestPoint(polygonData.features);
     }
 
     void createPolygons() {
